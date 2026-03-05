@@ -1,0 +1,2 @@
+[console_scripts]
+bootlegger = bootlegger.main:cli

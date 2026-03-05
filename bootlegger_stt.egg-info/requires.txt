@@ -1,0 +1,6 @@
+fastapi>=0.115
+uvicorn[standard]>=0.34
+python-multipart>=0.0.18
+pydub>=0.25.1
+pydantic-settings>=2.0
+moonshine-voice>=0.0.49

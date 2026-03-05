@@ -3,7 +3,10 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bootlegger"
+name = "bootlegger-stt"
+authors = [
+  { name = "Clay Rosenthal", email = "git@mail.clayrosenthal.me" },
+]
 version = "0.1.0"
 description = "OpenAI-compatible FastAPI server for Moonshine Voice STT"
 requires-python = ">=3.10"
