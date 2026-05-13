@@ -1,6 +1,6 @@
 # Bootlegger
 
-An OpenAI-compatible speech-to-text API server powered by [Moonshine](https://github.com/moonshine-ai/moonshine). Drop-in replacement for OpenAI's `/v1/audio/transcriptions` endpoint that runs entirely on-device.
+An OpenAI-compatible audio API server powered by [Moonshine](https://github.com/moonshine-ai/moonshine). Drop-in replacement for OpenAI's `/v1/audio/transcriptions` and `/audio/speech` endpoints that runs entirely on-device.
 
 ## Install
 

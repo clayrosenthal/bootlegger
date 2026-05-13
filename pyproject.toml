@@ -1,6 +1,6 @@
 [project]
 name = "bootlegger-voice"
-version = "0.1.2"
+version = "0.1.0"
 description = "OpenAI-compatible FastAPI server for Moonshine Voice STT and TTS"
 requires-python = ">=3.10"
 license = "Apache-2.0"
