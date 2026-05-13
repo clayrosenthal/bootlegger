@@ -3,6 +3,7 @@
 *.egg-info
 .venv/
 dist/
+.ruff_cache/
 
 # claude
 .omc/

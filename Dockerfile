@@ -10,7 +10,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
-COPY LICENSE README.md pyproject.toml .
+COPY LICENSE README.md pyproject.toml /app/
 COPY bootlegger/ bootlegger/
 
 RUN uv pip install --system --no-cache .

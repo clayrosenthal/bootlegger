@@ -1,14 +1,26 @@
 amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Builtins.pkl"
 
+exclude = List(".venv", "dist")
+
 local linters = new Mapping<String, Step> {
-    ["ruff"] = Builtins.ruff
-    ["ruff-format"] = Builtins.ruff_format
-    ["ty"] = Builtins.ty
+    ["ruff"] = (Builtins.ruff) {
+      batch  = true
+    }
+    ["ruff-format"] = (Builtins.ruff_format) {
+      depends = "ruff"
+    }
+    ["ty"] = (Builtins.ty) {
+      stomp = true
+      exclude = List("tests/**/*.py")
+    }
     ["mise"] = Builtins.mise
     ["hadolint"] = Builtins.hadolint
     ["tombi"] = Builtins.tombi
-    ["tombi-format"] = Builtins.tombi_format
+    ["tombi-format"] = (Builtins.tombi_format) {
+      depends = "tombi"
+    }
+    ["ghalint-workflow"] = Builtins.ghalint_workflow
     ["whitespace"] = Builtins.trailing_whitespace
     ["newlines"] = Builtins.newlines
     ["mixed-line-ending"] = Builtins.mixed_line_ending

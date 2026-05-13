@@ -6,6 +6,7 @@ hk = "latest"
 tombi = "latest"
 pkl = "latest"
 hadolint = "latest"
+ghalint = "latest"
 
 [env]
 HK_MISE = "1"
