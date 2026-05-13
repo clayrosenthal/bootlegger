@@ -2,8 +2,17 @@
 python = "3.13"
 uv = "latest"
 pitchfork = "latest"
+hk = "latest"
+tombi = "latest"
+pkl = "latest"
+hadolint = "latest"
+
+[env]
+HK_MISE = "1"
 
 [tasks.docker-build]
 description = "Build the bootlegger docker image"
 run = "docker build -t bootlegger:latest ."
 
+[tasks.pre-commit]
+run = "hk run pre-commit"

@@ -19,7 +19,7 @@ def decode_audio(file_bytes: bytes, filename: str) -> tuple[list[float], int]:
         "m4a": "m4a",
         "webm": "webm",
     }
-    fmt = format_map.get(ext)
+    fmt = format_map.get(ext) if ext is not None else None
 
     if fmt:
         audio = AudioSegment.from_file(buf, format=fmt)
@@ -50,7 +50,6 @@ def decode_audio(file_bytes: bytes, filename: str) -> tuple[list[float], int]:
 
     n_samples = len(raw) // sample_width
     samples = [
-        struct.unpack_from(fmt_char, raw, i * sample_width)[0] / max_val
-        for i in range(n_samples)
+        struct.unpack_from(fmt_char, raw, i * sample_width)[0] / max_val for i in range(n_samples)
     ]
     return samples, sample_rate

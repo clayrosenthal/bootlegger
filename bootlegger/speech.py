@@ -81,9 +81,7 @@ def _encode_with_pydub(samples, sample_rate: int, fmt: str) -> bytes:
 
     pydub_fmt, codec = _PYDUB_FORMATS[fmt]
     pcm = _samples_to_int16(samples)
-    seg = AudioSegment(
-        data=pcm, sample_width=2, frame_rate=sample_rate, channels=1
-    )
+    seg = AudioSegment(data=pcm, sample_width=2, frame_rate=sample_rate, channels=1)
     buf = io.BytesIO()
     if codec is not None:
         seg.export(buf, format=pydub_fmt, codec=codec)
@@ -99,9 +97,7 @@ def _encode(samples, sample_rate: int, fmt: str) -> bytes:
         return _samples_to_int16(samples)
     if fmt in _PYDUB_FORMATS:
         return _encode_with_pydub(samples, sample_rate, fmt)
-    raise HTTPException(
-        status_code=400, detail=f"Unsupported response_format: {fmt}"
-    )
+    raise HTTPException(status_code=400, detail=f"Unsupported response_format: {fmt}")
 
 
 def _resolve_voice(voice: Union[str, dict, None]) -> Optional[str]:
@@ -146,9 +142,19 @@ def _streaming_wav_header(sample_rate: int) -> bytes:
     data_size = 0xFFFFFFFF
     return struct.pack(
         "<4sI4s4sIHHIIHH4sI",
-        b"RIFF", chunk_size, b"WAVE",
-        b"fmt ", 16, 1, 1, sample_rate, sample_rate * 2, 2, 16,
-        b"data", data_size,
+        b"RIFF",
+        chunk_size,
+        b"WAVE",
+        b"fmt ",
+        16,
+        1,
+        1,
+        sample_rate,
+        sample_rate * 2,
+        2,
+        16,
+        b"data",
+        data_size,
     )
 
 
@@ -208,8 +214,17 @@ def _stream_via_ffmpeg(queue: Queue, fmt: str) -> Iterator[bytes]:
     sample_rate = sr_or_exc
 
     cmd = [
-        "ffmpeg", "-loglevel", "error",
-        "-f", "s16le", "-ar", str(sample_rate), "-ac", "1", "-i", "pipe:0",
+        "ffmpeg",
+        "-loglevel",
+        "error",
+        "-f",
+        "s16le",
+        "-ar",
+        str(sample_rate),
+        "-ac",
+        "1",
+        "-i",
+        "pipe:0",
         *_FFMPEG_OUTPUT_ARGS[fmt],
         "pipe:1",
     ]
@@ -263,9 +278,7 @@ def _stream_via_ffmpeg(queue: Queue, fmt: str) -> Iterator[bytes]:
 def handle_speech(req: SpeechRequest, default_language: str) -> Response:
     fmt = (req.response_format or "mp3").lower()
     if fmt not in _FORMAT_MEDIA_TYPES:
-        raise HTTPException(
-            status_code=400, detail=f"Unsupported response_format: {fmt}"
-        )
+        raise HTTPException(status_code=400, detail=f"Unsupported response_format: {fmt}")
 
     language = (req.language or default_language).replace("_", "-")
     voice = _resolve_voice(req.voice)

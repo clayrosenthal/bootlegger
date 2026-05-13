@@ -16,16 +16,14 @@ from bootlegger.transcribe import handle_transcription
 def create_app(settings: Settings) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        from moonshine_voice import Transcriber, ModelArch, get_model_for_language
+        from moonshine_voice import ModelArch, Transcriber, get_model_for_language
 
-        model_arch = (
-            ModelArch(settings.model_arch)
-            if settings.model_arch is not None
-            else None
-        )
-        model_path, resolved_arch = get_model_for_language(
-            settings.language, model_arch
-        )
+        if settings.model_arch is not None:
+            model_path, resolved_arch = get_model_for_language(
+                settings.language, ModelArch(settings.model_arch)
+            )
+        else:
+            model_path, resolved_arch = get_model_for_language(settings.language)
 
         transcriber = Transcriber(model_path, resolved_arch)
         app.state.transcriber = transcriber
@@ -96,14 +94,45 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--version", "-V", action="version", version=f"bootlegger {__version__}")
     parser.add_argument("--host", default=None, help=f"Bind address (default: {defaults.host})")
-    parser.add_argument("--port", type=int, default=None, help=f"Bind port (default: {defaults.port})")
-    parser.add_argument("--language", default=None, help=f"Default STT language (default: {defaults.language})")
-    parser.add_argument("--model-arch", type=int, default=None, help="Moonshine STT model architecture (integer)")
-    parser.add_argument("--api-prefix", default=None, help=f"API route prefix (default: {defaults.api_prefix})")
-    parser.add_argument("--tts-language", default=None, help=f"Default TTS language tag (default: {defaults.tts_language})")
-    parser.add_argument("--tts-voice", default=None, help="Default TTS voice id (e.g. kokoro_af_alloy)")
-    parser.add_argument("--reload", action="store_true", help="Enable uvicorn auto-reload (development only)")
-    parser.add_argument("--log-level", default=None, help="Uvicorn log level (debug, info, warning, error, critical)")
+    parser.add_argument(
+        "--port", type=int, default=None, help=f"Bind port (default: {defaults.port})"
+    )
+    parser.add_argument(
+        "--language",
+        default=None,
+        help=f"Default STT language (default: {defaults.language})",
+    )
+    parser.add_argument(
+        "--model-arch",
+        type=int,
+        default=None,
+        help="Moonshine STT model architecture (integer)",
+    )
+    parser.add_argument(
+        "--api-prefix",
+        default=None,
+        help=f"API route prefix (default: {defaults.api_prefix})",
+    )
+    parser.add_argument(
+        "--tts-language",
+        default=None,
+        help=f"Default TTS language tag (default: {defaults.tts_language})",
+    )
+    parser.add_argument(
+        "--tts-voice",
+        default=None,
+        help="Default TTS voice id (e.g. kokoro_af_alloy)",
+    )
+    parser.add_argument(
+        "--reload",
+        action="store_true",
+        help="Enable uvicorn auto-reload (development only)",
+    )
+    parser.add_argument(
+        "--log-level",
+        default=None,
+        help="Uvicorn log level (debug, info, warning, error, critical)",
+    )
     return parser
 
 
@@ -114,21 +143,27 @@ def cli():
     args = parser.parse_args()
 
     overrides = {
-        k: v
-        for k, v in vars(args).items()
-        if v is not None and k not in {"reload", "log_level"}
+        k: v for k, v in vars(args).items() if v is not None and k not in {"reload", "log_level"}
     }
     if overrides:
         settings = settings.model_copy(update=overrides)
         app = create_app(settings)
 
-    uvicorn_kwargs = {"host": settings.host, "port": settings.port}
-    if args.log_level is not None:
-        uvicorn_kwargs["log_level"] = args.log_level
     if args.reload:
-        uvicorn.run("bootlegger.main:app", reload=True, **uvicorn_kwargs)
+        uvicorn.run(
+            "bootlegger.main:app",
+            host=settings.host,
+            port=settings.port,
+            reload=True,
+            log_level=args.log_level,
+        )
     else:
-        uvicorn.run(app, **uvicorn_kwargs)
+        uvicorn.run(
+            app,
+            host=settings.host,
+            port=settings.port,
+            log_level=args.log_level,
+        )
 
 
 if __name__ == "__main__":

@@ -39,8 +39,8 @@ wheels = [
 ]
 
 [[package]]
-name = "bootlegger-stt"
-version = "0.1.0"
+name = "bootlegger-voice"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
@@ -51,6 +51,12 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+    { name = "ty" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
@@ -59,6 +65,12 @@ requires-dist = [
     { name = "pydub", specifier = ">=0.25.1" },
     { name = "python-multipart", specifier = ">=0.0.18" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "ruff", specifier = ">=0.6" },
+    { name = "ty", specifier = ">=0.0.1a1" },
 ]
 
 [[package]]
@@ -800,6 +812,31 @@ wheels = [
 ]
 
 [[package]]
+name = "ruff"
+version = "0.15.12"
+source = { registry = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/" }
+sdist = { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12.tar.gz", hash = "sha256:ecea26adb26b4232c0c2ca19ccbc0083a68344180bba2a600605538ce51a40a6" }
+wheels = [
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-linux_armv6l.whl", hash = "sha256:f86f176e188e94d6bdbc09f09bfd9dc729059ad93d0e7390b5a73efe19f8861c" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:e3bcd123364c3770b8e1b7baaf343cc99a35f197c5c6e8af79015c666c423a6c" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-macosx_11_0_arm64.whl", hash = "sha256:fe87510d000220aa1ed530d4448a7c696a0cae1213e5ec30e5874287b66557b5" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:84a1630093121375a3e2a95b4a6dc7b59e2b4ee76216e32d81aae550a832d002" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:fb129f40f114f089ebe0ca56c0d251cf2061b17651d464bb6478dc01e69f11f5" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b0c862b172d695db7598426b8af465e7e9ac00a3ea2a3630ee67eb82e366aaa6" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2849ea9f3484c3aca43a82f484210370319e7170df4dfe4843395ddf6c57bc33" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:9e77c7e51c07fe396826d5969a5b846d9cd4c402535835fb6e21ce8b28fef847" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:83b2f4f2f3b1026b5fb449b467d9264bf22067b600f7b6f41fc5958909f449d0" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:9ba3b8f1afd7e2e43d8943e55f249e13f9682fde09711644a6e7290eb4f3e339" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:e852ba9fdc890655e1d78f2df1499efbe0e54126bd405362154a75e2bde159c5" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:dd8aed930da53780d22fc70bdf84452c843cf64f8cb4eb38984319c24c5cd5fd" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-musllinux_1_2_i686.whl", hash = "sha256:01da3988d225628b709493d7dc67c3b9b12c0210016b08690ef9bd27970b262b" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:9cae0f92bd5700d1213188b31cd3bdd2b315361296d10b96b8e2337d3d11f53e" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-win32.whl", hash = "sha256:d0185894e038d7043ba8fd6aee7499ece6462dc0ea9f1e260c7451807c714c20" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-win_amd64.whl", hash = "sha256:c87a162d61ab3adca47c03f7f717c68672edec7d1b5499e652331780fe74950d" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ruff/0.15.12/ruff-0.15.12-py3-none-win_arm64.whl", hash = "sha256:a538f7a82d061cee7be55542aca1d86d1393d55d81d4fcc314370f4340930d4f" },
+]
+
+[[package]]
 name = "sounddevice"
 version = "0.5.5"
 source = { registry = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/" }
@@ -838,6 +875,31 @@ dependencies = [
 sdist = { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/tqdm/4.67.3/tqdm-4.67.3.tar.gz", hash = "sha256:7d825f03f89244ef73f1d4ce193cb1774a8179fd96f31d7e1dcde62092b960bb" }
 wheels = [
     { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/tqdm/4.67.3/tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf" },
+]
+
+[[package]]
+name = "ty"
+version = "0.0.35"
+source = { registry = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/" }
+sdist = { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35.tar.gz", hash = "sha256:8375c240ab38138a19db07996c9808fb7a92047c1492e1ce587c2ef5112ad3a9" }
+wheels = [
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-linux_armv6l.whl", hash = "sha256:85ae1e59b9fb0b40e9d84fe61b29653c5f2f5e78b487ece371a7a38c20c781cf" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:709dbb7af4fcadb1196863c00b8791bbbbcc9dacbe15a0ff17f0af82b35d415b" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-macosx_11_0_arm64.whl", hash = "sha256:2cb0877419ab0c8708b6925cb0c2800b263842bd3c425113f200538772f3a0cc" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e7afbcfc61904b7e82e7fe1a1db832a40d8f01e69dee1775f6594e552980536c" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:b61498cc3e4178031c079951257fbdb209a891b4feb10ad6c40f615a51846f41" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:573b1eacda349fc8dba0d767b41631c3a6f66412363127c5bf2b1b40a1d898d2" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a7209746158d6393c1040aa64b3ca29622e212ea7d8bae22ba50dbcbb4f96f0a" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:4466a1470aa4418d49a9aa45d9da7de42033addd0a2837c5b2b0eb71d3c2bcd3" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eb44bb742d52c309dcaa6598bcf4d82eb4bf1241b9e4940461e522e30093fe8b" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:34b219250736c989b2670a03782c61315f523f3a2be37f1f90b1207e2212c188" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:88e2ac497decc0940ef1a07571dee8a746112a93a09cdc7f8bca0099752e2e05" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:02cae51b53e6ec17d5d827ff1a3a76fd119705b56a92156e04399eda6e911596" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-musllinux_1_2_i686.whl", hash = "sha256:11871d730c9400d899ac0b9f3d660ed2e7e433377c8725549f8250a36a7f2620" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:1ad0a2f0530d0933dcc99ad36ac556c63e384ea72ab9a18d23ad2e2c9fd61c73" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-win32.whl", hash = "sha256:0e25d63ec4ab116e7f6757e44d16ca9216bca679d19ecc36d119cf80faada61a" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-win_amd64.whl", hash = "sha256:6a0a6d259f6f2f8f2f954c6f013d4e0b5eba68af6b353bf19a47d59ec254a3d5" },
+    { url = "https://amazon-149122183214.d.codeartifact.us-west-2.amazonaws.com/pypi/FAR-libraries/simple/ty/0.0.35/ty-0.0.35-py3-none-win_arm64.whl", hash = "sha256:619c52c0fb2aa21961a848a1995135ad3b6d0a9aa54da0194e60f679cc200e13" },
 ]
 
 [[package]]

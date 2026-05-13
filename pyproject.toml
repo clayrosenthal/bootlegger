@@ -1,48 +1,75 @@
 [project]
 name = "bootlegger-voice"
+version = "0.1.2"
+description = "OpenAI-compatible FastAPI server for Moonshine Voice STT and TTS"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
   { name = "Clay Rosenthal", email = "git@mail.clayrosenthal.me" },
 ]
 maintainers = [
   { name = "Clay Rosenthal", email = "git@mail.clayrosenthal.me" },
 ]
-license = "Apache-2.0"
-license-files = ["LICENSE"]
-version = "0.1.1"
-description = "OpenAI-compatible FastAPI server for Moonshine Voice STT and TTS"
 classifiers = [
-    "Operating System :: OS Independent",
-    "License :: OSI Approved :: Apache Software License",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3 :: Only",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.10"
 dependencies = [
-    "moonshine-voice>=0.0.59",
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.34",
-    "python-multipart>=0.0.18",
-    "pydub>=0.25.1",
-    "pydantic-settings>=2.0",
+  "fastapi>=0.115",
+  "moonshine-voice>=0.0.59",
+  "pydantic-settings>=2.0",
+  "pydub>=0.25.1",
+  "python-multipart>=0.0.18",
+  "uvicorn[standard]>=0.34",
 ]
 
 [project.urls]
 homepage = "https://github.com/clayrosenthal/bootlegger"
 
+[project.scripts]
+bootlegger = "bootlegger.main:cli"
+
+[dependency-groups]
+dev = [
+  "ruff>=0.6",
+  "ty>=0.0.1a1",
+]
+
 [build-system]
 requires = ["uv_build>=0.8.2,<0.10.0"]
 build-backend = "uv_build"
 
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.format]
+indent-style = "space"
+
+[tool.ruff.lint]
+select = [
+  "E",  # pycodestyle errors
+  "W",  # pycodestyle warnings
+  "F",  # pyflakes
+  "I",  # isort
+  "W191",  # tab-indentation
+  "E101",  # mixed-indentation
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 100
+
 [tool.uv.build-backend]
 module-root = ""
 module-name = "bootlegger"
-
-[project.scripts]
-bootlegger = "bootlegger.main:cli"

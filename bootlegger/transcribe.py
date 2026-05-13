@@ -9,9 +9,9 @@ from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from bootlegger.audio import decode_audio
 from bootlegger.formatting import (
     format_json,
+    format_srt,
     format_text,
     format_verbose_json,
-    format_srt,
     format_vtt,
 )
 
@@ -80,9 +80,7 @@ def _stream_sse(
                 try:
                     chunk_size = max(1, int(0.1 * sample_rate))
                     for i in range(0, len(samples), chunk_size):
-                        transcriber.add_audio(
-                            samples[i:i + chunk_size], sample_rate
-                        )
+                        transcriber.add_audio(samples[i : i + chunk_size], sample_rate)
                 finally:
                     transcriber.stop()
                     transcriber.remove_listener(listener)

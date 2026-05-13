@@ -1504,4 +1504,3 @@ curl https://api.openai.com/v1/audio/voice_consents/$CONSENT_ID \
     -X DELETE \
     -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
-
