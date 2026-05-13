@@ -9,3 +9,5 @@ class Settings(BaseSettings):
     language: str = "en"
     model_arch: int | None = None
     api_prefix: str = "/v1"
+    tts_language: str = "en-us"
+    tts_voice: str | None = None
