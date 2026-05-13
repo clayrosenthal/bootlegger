@@ -1,0 +1,9 @@
+[tools]
+python = "3.13"
+uv = "latest"
+pitchfork = "latest"
+
+[tasks.docker-build]
+description = "Build the bootlegger docker image"
+run = "docker build -t bootlegger:latest ."
+

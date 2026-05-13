@@ -1,0 +1,10 @@
+[daemons.bootlegger-local]
+run = "uv run bootlegger"
+port = 8000
+ready_port = 8000
+
+[daemons.bootlegger-docker]
+run = "docker run --rm --name bootlegger -p 8000:8000 bootlegger:latest"
+port = 8000
+ready_port = 8000
+hooks = { on_stop = "docker stop bootlegger" }
