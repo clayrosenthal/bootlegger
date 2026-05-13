@@ -14,13 +14,13 @@ brew install ffmpeg
 sudo apt-get install ffmpeg
 
 # Install bootlegger
-pip install .
+pip install bootlegger-voice
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install .
+uv pip install bootlegger-voice
 ```
 
 ## Run
@@ -79,7 +79,8 @@ Multipart form fields:
 | `file` | yes | | Audio file (wav, mp3, ogg, flac, m4a, webm) |
 | `model` | no | `moonshine` | Model name (ignored, for OpenAI compatibility) |
 | `language` | no | server default | Language code |
-| `response_format` | no | `json` | One of: `json`, `text`, `verbose_json`, `srt`, `vtt` |
+| `response_format` | no | `json` | One of: `json`, `text`, `verbose_json`, `srt`, `vtt` (ignored when `stream=true`) |
+| `stream` | no | `false` | When `true`, returns a `text/event-stream` of OpenAI-shaped `transcript.text.delta` events followed by `transcript.text.done` and `[DONE]`. Each delta corresponds to a completed VAD-detected line, so concatenating deltas reconstructs the final text exactly. |
 
 Example with curl:
 

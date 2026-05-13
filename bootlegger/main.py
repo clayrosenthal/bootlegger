@@ -48,6 +48,7 @@ def create_app(settings: Settings) -> FastAPI:
         response_format: str = Form("json"),
         prompt: str | None = Form(None),
         temperature: float | None = Form(None),
+        stream: bool = Form(False),
     ):
         lang = language or app.state.language
         return handle_transcription(
@@ -56,6 +57,7 @@ def create_app(settings: Settings) -> FastAPI:
             file,
             lang,
             response_format,
+            stream=stream,
         )
 
     @app.post(settings.api_prefix + "/audio/speech")

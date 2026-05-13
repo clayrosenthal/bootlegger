@@ -1,5 +1,5 @@
 [project]
-name = "bootlegger-stt"
+name = "bootlegger-voice"
 authors = [
   { name = "Clay Rosenthal", email = "git@mail.clayrosenthal.me" },
 ]
@@ -8,8 +8,8 @@ maintainers = [
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-version = "0.1.0"
-description = "OpenAI-compatible FastAPI server for Moonshine Voice STT"
+version = "0.1.1"
+description = "OpenAI-compatible FastAPI server for Moonshine Voice STT and TTS"
 classifiers = [
     "Operating System :: OS Independent",
     "License :: OSI Approved :: Apache Software License",
@@ -25,12 +25,12 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "moonshine-voice>=0.0.59",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.34",
     "python-multipart>=0.0.18",
     "pydub>=0.25.1",
     "pydantic-settings>=2.0",
-    "moonshine-voice>=0.0.59",
 ]
 
 [project.urls]
