@@ -1,11 +1,14 @@
 import io
+import re
 import struct
+import subprocess
 import threading
 import wave
-from typing import Optional, Union
+from queue import Queue
+from typing import Iterator, Optional, Union
 
 from fastapi import HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 
 
@@ -34,6 +37,13 @@ _PYDUB_FORMATS = {
     "opus": ("ogg", "libopus"),
     "aac": ("adts", "aac"),
     "flac": ("flac", None),
+}
+
+_FFMPEG_OUTPUT_ARGS = {
+    "mp3": ["-f", "mp3", "-c:a", "libmp3lame", "-b:a", "128k"],
+    "opus": ["-f", "ogg", "-c:a", "libopus", "-b:a", "64k"],
+    "aac": ["-f", "adts", "-c:a", "aac", "-b:a", "128k"],
+    "flac": ["-f", "ogg", "-c:a", "flac"],
 }
 
 _OPENAI_VOICE_TO_KOKORO = {
@@ -125,6 +135,131 @@ def _get_tts(language: str, voice: Optional[str]):
     return tts
 
 
+def _split_sentences(text: str) -> list[str]:
+    parts = re.split(r"(?<=[.!?])\s+", text.strip())
+    return [p for p in parts if p.strip()] or [text.strip()]
+
+
+def _streaming_wav_header(sample_rate: int) -> bytes:
+    # RIFF header with 0xFFFFFFFF placeholders (streaming WAV convention).
+    chunk_size = 0xFFFFFFFF
+    data_size = 0xFFFFFFFF
+    return struct.pack(
+        "<4sI4s4sIHHIIHH4sI",
+        b"RIFF", chunk_size, b"WAVE",
+        b"fmt ", 16, 1, 1, sample_rate, sample_rate * 2, 2, 16,
+        b"data", data_size,
+    )
+
+
+def _synthesize_sentences(tts, sentences: list[str], speed: Optional[float]) -> Queue:
+    """Spawn a producer thread that synthesizes each sentence and puts
+    ('data', sample_rate, pcm_bytes) or ('error', exc) or ('eof', None) on a queue."""
+    queue: Queue = Queue(maxsize=2)
+
+    def produce():
+        try:
+            for sent in sentences:
+                kwargs = {}
+                if speed is not None:
+                    kwargs["speed"] = speed
+                samples, sr = tts.synthesize(sent, **kwargs)
+                queue.put(("data", sr, _samples_to_int16(samples)))
+        except Exception as exc:
+            queue.put(("error", exc, None))
+        finally:
+            queue.put(("eof", None, None))
+
+    threading.Thread(target=produce, daemon=True).start()
+    return queue
+
+
+def _stream_raw_pcm(queue: Queue) -> Iterator[bytes]:
+    while True:
+        kind, a, b = queue.get()
+        if kind == "eof":
+            return
+        if kind == "error":
+            raise a
+        yield b
+
+
+def _stream_wav(queue: Queue) -> Iterator[bytes]:
+    header_sent = False
+    while True:
+        kind, a, b = queue.get()
+        if kind == "eof":
+            return
+        if kind == "error":
+            raise a
+        if not header_sent:
+            yield _streaming_wav_header(a)
+            header_sent = True
+        yield b
+
+
+def _stream_via_ffmpeg(queue: Queue, fmt: str) -> Iterator[bytes]:
+    first = queue.get()
+    kind, sr_or_exc, pcm = first
+    if kind == "eof":
+        return
+    if kind == "error":
+        raise sr_or_exc
+    sample_rate = sr_or_exc
+
+    cmd = [
+        "ffmpeg", "-loglevel", "error",
+        "-f", "s16le", "-ar", str(sample_rate), "-ac", "1", "-i", "pipe:0",
+        *_FFMPEG_OUTPUT_ARGS[fmt],
+        "pipe:1",
+    ]
+    proc = subprocess.Popen(
+        cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    writer_error: list[BaseException] = []
+
+    def write_pcm():
+        try:
+            assert proc.stdin is not None
+            proc.stdin.write(pcm)
+            while True:
+                kind2, a2, b2 = queue.get()
+                if kind2 == "eof":
+                    break
+                if kind2 == "error":
+                    writer_error.append(a2)
+                    break
+                proc.stdin.write(b2)
+        except BrokenPipeError:
+            pass
+        except Exception as exc:
+            writer_error.append(exc)
+        finally:
+            try:
+                if proc.stdin is not None:
+                    proc.stdin.close()
+            except Exception:
+                pass
+
+    writer = threading.Thread(target=write_pcm, daemon=True)
+    writer.start()
+    try:
+        assert proc.stdout is not None
+        while True:
+            chunk = proc.stdout.read(4096)
+            if not chunk:
+                break
+            yield chunk
+    finally:
+        writer.join(timeout=5)
+        proc.wait(timeout=5)
+        if writer_error:
+            raise writer_error[0]
+        if proc.returncode not in (0, None):
+            stderr = proc.stderr.read().decode(errors="replace") if proc.stderr else ""
+            raise RuntimeError(f"ffmpeg failed ({proc.returncode}): {stderr}")
+
+
 def handle_speech(req: SpeechRequest, default_language: str) -> Response:
     fmt = (req.response_format or "mp3").lower()
     if fmt not in _FORMAT_MEDIA_TYPES:
@@ -135,8 +270,35 @@ def handle_speech(req: SpeechRequest, default_language: str) -> Response:
     language = (req.language or default_language).replace("_", "-")
     voice = _resolve_voice(req.voice)
 
+    if req.stream_format is not None and req.stream_format != "audio":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported stream_format: {req.stream_format} (only 'audio' is supported)",
+        )
+
+    streaming = req.stream_format == "audio"
+
     try:
         tts = _get_tts(language, voice)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    media_type = _FORMAT_MEDIA_TYPES[fmt]
+
+    if streaming:
+        sentences = _split_sentences(req.input)
+        queue = _synthesize_sentences(tts, sentences, req.speed)
+        if fmt == "pcm":
+            iterator = _stream_raw_pcm(queue)
+        elif fmt == "wav":
+            iterator = _stream_wav(queue)
+        else:
+            iterator = _stream_via_ffmpeg(queue, fmt)
+        return StreamingResponse(iterator, media_type=media_type)
+
+    try:
         kwargs = {}
         if req.speed is not None:
             kwargs["speed"] = req.speed
@@ -147,4 +309,4 @@ def handle_speech(req: SpeechRequest, default_language: str) -> Response:
         raise HTTPException(status_code=400, detail=str(e))
 
     audio_bytes = _encode(samples, sample_rate, fmt)
-    return Response(content=audio_bytes, media_type=_FORMAT_MEDIA_TYPES[fmt])
+    return Response(content=audio_bytes, media_type=media_type)

@@ -132,6 +132,7 @@ JSON body fields:
 | `response_format` | no | `mp3` | One of: `mp3`, `opus`, `aac`, `flac`, `wav`, `pcm` |
 | `speed` | no | `1.0` | Speaking-rate multiplier |
 | `language` | no | server default | TTS language tag, e.g. `en-us`, `es-es`, `ja-jp`. See `list_tts_languages()` for the full set |
+| `stream_format` | no | _(none)_ | Set to `"audio"` to stream audio as it's synthesized. Input is split into sentences; each is synthesized in a background thread while earlier bytes are flushed to the client. SSE is not supported. |
 
 Encoded formats other than `wav`/`pcm` use `ffmpeg` via `pydub`, so make sure `ffmpeg` is installed.
 
