@@ -1,3 +1,6 @@
+import sys
+import types
+
 import pytest
 
 from bootlegger.main import _build_parser
@@ -14,11 +17,45 @@ def test_parser_help_lists_all_flags():
         "--api-prefix",
         "--tts-language",
         "--tts-voice",
+        "--list-tts-voices",
         "--reload",
         "--log-level",
         "--version",
     ]:
         assert flag in help_text
+
+
+def test_parser_list_tts_voices_flag_defaults_false():
+    parser = _build_parser()
+    assert parser.parse_args([]).list_tts_voices is False
+
+
+def test_parser_list_tts_voices_flag_set():
+    parser = _build_parser()
+    assert parser.parse_args(["--list-tts-voices"]).list_tts_voices is True
+
+
+def test_print_tts_voices_outputs_present_and_downloadable(monkeypatch, capsys):
+    import bootlegger.main as main_mod
+
+    fake_module = types.SimpleNamespace(
+        list_tts_voices=lambda lang: {
+            "present": ["kokoro_af_alloy"],
+            "downloadable": ["kokoro_af_nova", "piper_en_US-amy-low"],
+        }
+    )
+    monkeypatch.setitem(sys.modules, "moonshine_voice", fake_module)
+
+    rc = main_mod._print_tts_voices("en-us")
+    out = capsys.readouterr().out
+
+    assert rc == 0
+    assert "TTS voices for en-us:" in out
+    assert "kokoro_af_alloy" in out
+    assert "kokoro_af_nova" in out
+    assert "piper_en_US-amy-low" in out
+    assert "present (downloaded):" in out
+    assert "downloadable:" in out
 
 
 def test_parser_defaults_are_none_for_overrides():

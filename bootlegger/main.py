@@ -9,6 +9,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 
 from bootlegger import __version__
 from bootlegger.config import Settings
+from bootlegger.elevenlabs import register_routes as register_elevenlabs_routes
 from bootlegger.speech import SpeechRequest, handle_speech
 from bootlegger.transcribe import handle_transcription
 
@@ -79,6 +80,8 @@ def create_app(settings: Settings) -> FastAPI:
             ],
         }
 
+    register_elevenlabs_routes(app, settings)
+
     return app
 
 
@@ -124,6 +127,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Default TTS voice id (e.g. kokoro_af_alloy)",
     )
     parser.add_argument(
+        "--list-tts-voices",
+        action="store_true",
+        help="List available TTS voices for the configured TTS language and exit",
+    )
+    parser.add_argument(
         "--reload",
         action="store_true",
         help="Enable uvicorn auto-reload (development only)",
@@ -136,6 +144,20 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _print_tts_voices(language: str) -> int:
+    from moonshine_voice import list_tts_voices
+
+    entry = list_tts_voices(language)
+    print(f"TTS voices for {language}:")
+    print("  present (downloaded):")
+    for v in entry.get("present", []):
+        print(f"    {v}")
+    print("  downloadable:")
+    for v in entry.get("downloadable", []):
+        print(f"    {v}")
+    return 0
+
+
 def cli():
     global settings, app
 
@@ -143,11 +165,16 @@ def cli():
     args = parser.parse_args()
 
     overrides = {
-        k: v for k, v in vars(args).items() if v is not None and k not in {"reload", "log_level"}
+        k: v
+        for k, v in vars(args).items()
+        if v is not None and k not in {"reload", "log_level", "list_tts_voices"}
     }
     if overrides:
         settings = settings.model_copy(update=overrides)
         app = create_app(settings)
+
+    if args.list_tts_voices:
+        raise SystemExit(_print_tts_voices(settings.tts_language))
 
     if args.reload:
         uvicorn.run(
